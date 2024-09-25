@@ -24,7 +24,7 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-
+    // all db Collections 
     const menuCollection = client.db("myres").collection("menu");
     const reviewCollection = client.db("myres").collection("reviews");
     const cardCollection = client.db("myres").collection("cards");
