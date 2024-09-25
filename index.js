@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 // middleware
 app.use(cors());
@@ -28,6 +28,23 @@ async function run() {
     const menuCollection = client.db("myres").collection("menu");
     const reviewCollection = client.db("myres").collection("reviews");
     const cardCollection = client.db("myres").collection("cards");
+    const userCollection = client.db('myres').collection('user')
+
+
+    // user data send 
+    app.post('/user', async(req,res)=>{
+      const user = req.body;
+      // Google Sing in  inserted  email google email
+      const query  =  {email : user.email}
+      const existingUser = await userCollection.findOne(query)
+
+      if(existingUser){
+        return res.send({message : 'user alredy existing ' , insertedId : null})
+      }
+
+      const result = await userCollection.insertOne(user)
+      res.send(result);
+    })
 
     // date get database
     app.get("/menu", async (req, res) => {
@@ -53,6 +70,14 @@ async function run() {
     app.post("/cards", async (req, res) => {
       const cardItem = req.body;
       const result = await cardCollection.insertOne(cardItem);
+      res.send(result);
+    });
+
+    //   card collection delet data base
+    app.delete("/cards/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new  ObjectId(id) };
+      const result = await cardCollection.deleteOne(query);
       res.send(result);
     });
 
